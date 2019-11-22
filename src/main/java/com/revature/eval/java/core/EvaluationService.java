@@ -10,12 +10,27 @@ public class EvaluationService {
 	 * 1. Without using the StringBuilder or StringBuffer class, write a method that
 	 * reverses a String. Example: reverse("example"); -> "elpmaxe"
 	 * 
+	 * input: 
+	 * interpretation:
+	 * process:
+	 * output:
+	 * 
 	 * @param string
-	 * @return
 	 */
 	public String reverse(String string) {
+		//System.out.println(string);
+		String s = string;
+		String temp = "";
+		int length = s.length();
 		
-		return "";
+		for(int i = length -1; i >= 0; i-- ) {
+			
+			temp = temp + s.charAt(i);
+			
+		}
+		System.out.println(temp); // tobor
+		return temp;
+		
 	}
 
 	/**
@@ -28,7 +43,20 @@ public class EvaluationService {
 	 */
 	public String acronym(String phrase) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		String output = "";
+		 // "GNU Image Manipulation Program"
+		String[] myArray = phrase.split(" ");
+		for (int i = 0; i < myArray.length; i++) {
+			System.out.println(myArray[i].charAt(0));
+			output += myArray[i].charAt(0);
+		}
+		//Split the phrases by the words 
+		System.out.println(output);
+		
+		
+		return output;
+		
+		
 	}
 
 	/**
@@ -38,6 +66,10 @@ public class EvaluationService {
 	 * as having exactly two sides the same length, but for the purposes of this
 	 * exercise we'll say at least two.) A scalene triangle has all sides of
 	 * different lengths.
+	 * input: three doubles 5, 4, 6
+	 * interpretation:
+	 * process:
+	 * output:
 	 *
 	 */
 	static class Triangle {
@@ -82,16 +114,29 @@ public class EvaluationService {
 
 		public boolean isEquilateral() {
 			// TODO Write an implementation for this method declaration
+			
+			if((sideOne == sideTwo) && (sideOne == sideThree)) {
+				
+				return true;
+			} 
 			return false;
 		}
 
 		public boolean isIsosceles() {
 			// TODO Write an implementation for this method declaration
+			if(!isEquilateral() && !isScalene()) {
+				
+				return true;
+			}
 			return false;
 		}
 
 		public boolean isScalene() {
 			// TODO Write an implementation for this method declaration
+			if((sideOne != sideTwo) && (sideOne != sideThree) && (sideThree != sideOne)) {
+				
+				return true;
+			}
 			return false;
 		}
 
@@ -114,6 +159,8 @@ public class EvaluationService {
 	 */
 	public int getScrabbleScore(String string) {
 		// TODO Write an implementation for this method declaration
+		
+		// I want to assign all the letters a value
 		return 0;
 	}
 

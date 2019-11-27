@@ -291,7 +291,26 @@ public class EvaluationService {
 	 */
 	public String toPigLatin(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		StringBuilder myString = new StringBuilder(string);
+		
+		for(int i = 0; i < string.length(); i++) {
+			if(string.charAt(0) == ('a' | 'e' | 'i' |'u')) {
+				
+				//add "ay" to the end of the word
+				myString.append("ay");
+			} else if (string.charAt(0) != ('a' | 'e' | 'i' | 'u')) {
+				
+				//move it to the end of the word and add "ay";
+				
+				myString.append(myString.charAt(0));
+				myString.deleteCharAt(0);
+				myString.append("ay");
+				
+			}
+			
+		}
+		System.out.println(myString.toString());
+		return myString.toString();
 	}
 
 	/**
@@ -311,6 +330,13 @@ public class EvaluationService {
 	 */
 	public boolean isArmstrongNumber(int input) {
 		// TODO Write an implementation for this method declaration
+		
+		
+		
+		
+		
+		
+		
 		return false;
 	}
 

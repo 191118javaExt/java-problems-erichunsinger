@@ -1,10 +1,62 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EvaluationService {
+	
+	
+	/*
+	 * --Letter Values-- Letter Value A, E, I, O, U, L, N, R, S, T = 1; D, G = 2; B,
+	 * C, M, P = 3; F, H, V, W, Y = 4; K = 5; J, X = 8; Q, Z = 10; Examples
+	 * "cabbage" should be scored as worth 14 points:
+	 * 
+	 * 3 points for C, 1 point for A, twice 3 points for B, twice 2 points for G, 1
+	 * point for E And to total:
+	 * 
+	 * 3 + 2*1 + 2*3 + 2 + 1 = 3 + 2 + 6 + 3 = 5 + 9 = 14
+	 * */
+	// Class Variables
+	static Map<Character, Integer> scoreMp;
+	static {
+		scoreMp = new HashMap<>();
+		scoreMp.put('A', 1);
+		scoreMp.put('E', 1);
+		scoreMp.put('I', 1);
+		scoreMp.put('O', 1);
+		scoreMp.put('U', 1);
+		scoreMp.put('L', 1);
+		scoreMp.put('N', 1);
+		scoreMp.put('R', 1);
+		scoreMp.put('S', 1);
+		scoreMp.put('T', 1);
+		scoreMp.put('D', 2);
+		scoreMp.put('G', 2);
+		scoreMp.put('B', 3);	
+		scoreMp.put('C', 3);	
+		scoreMp.put('M', 3);	
+		scoreMp.put('P', 3);	
+		scoreMp.put('F', 4);
+		scoreMp.put('H', 4);
+		scoreMp.put('V', 4);
+		scoreMp.put('W', 4);
+		scoreMp.put('Y', 4);	
+		scoreMp.put('K', 5);
+		scoreMp.put('J',8);
+		scoreMp.put('X',8);
+		scoreMp.put('Q',10);
+		scoreMp.put('Z',10);
+	}
+	
+	static final String alphabet = "abcdefghijklmnopqrstuvwxyz";
+
 
 	/**
 	 * 1. Without using the StringBuilder or StringBuffer class, write a method that
@@ -160,8 +212,17 @@ public class EvaluationService {
 	public int getScrabbleScore(String string) {
 		// TODO Write an implementation for this method declaration
 		
-		// I want to assign all the letters a value
-		return 0;
+		int totalScore = 0;
+		String uString = string.toUpperCase();
+		
+		for(char c : uString.toCharArray()) {
+			
+			//System.out.println(" c: " + c + "val:" + scoreMp.get(c));
+			totalScore = totalScore + scoreMp.get(c);
+		}
+		
+		return totalScore;
+		
 	}
 
 	/**
@@ -197,7 +258,10 @@ public class EvaluationService {
 	 */
 	public String cleanPhoneNumber(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+		
+		return  string.replaceAll( "[^\\d]", "" );
+		
 	}
 
 	/**
@@ -211,7 +275,24 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+		Map<String, Integer> wordMap = new HashMap<>();
+		String[] words = string.split("\\W+");
+		List<String> wordList = Arrays.asList(words);
+		
+		for(String word : wordList) {
+			
+			
+			if(!wordMap.containsKey(word)) 
+				wordMap.put(word, 1);
+			else 
+				wordMap.put(word, wordMap.get(word) + 1);
+		
+			
+			
+		}
+		
+		return wordMap;
 	}
 
 	/**
@@ -291,26 +372,38 @@ public class EvaluationService {
 	 */
 	public String toPigLatin(String string) {
 		// TODO Write an implementation for this method declaration
-		StringBuilder myString = new StringBuilder(string);
 		
-		for(int i = 0; i < string.length(); i++) {
-			if(string.charAt(0) == ('a' | 'e' | 'i' |'u')) {
-				
-				//add "ay" to the end of the word
-				myString.append("ay");
-			} else if (string.charAt(0) != ('a' | 'e' | 'i' | 'u')) {
-				
-				//move it to the end of the word and add "ay";
-				
-				myString.append(myString.charAt(0));
-				myString.deleteCharAt(0);
-				myString.append("ay");
-				
-			}
+		String[] words = string.split(" ");
+		List<String> wordLst = Arrays.asList(words);
+		Character[] vowels = { 'a' , 'e' ,'i' , 'o' , 'u' };
+		List<Character> vowelLst = Arrays.asList(vowels);
+		
+		StringBuilder pigLatin = new StringBuilder();
+		String pgLtn = null;
+		
+		// Convert words to pigLatin
+		for(String word : wordLst) {
 			
+			if (pigLatin.length() != 0)
+				pigLatin.append(" ");
+			
+			if(vowelLst.contains(word.charAt(0))) {
+				
+				// starts with a vowel
+				pigLatin.append( word + "ay");
+			} else  {
+				// starts with consonant
+				// find first vowel
+				for (int idx = 0 ; idx < word.length(); idx = idx + 1) {
+					if (vowelLst.contains(word.charAt(idx))) {
+						// found vowel
+						pigLatin.append( word.substring(idx) + word.substring(0,idx) + "ay");
+						break;
+					}
+				}
+			}
 		}
-		System.out.println(myString.toString());
-		return myString.toString();
+		return pigLatin.toString();
 	}
 
 	/**
@@ -331,13 +424,36 @@ public class EvaluationService {
 	public boolean isArmstrongNumber(int input) {
 		// TODO Write an implementation for this method declaration
 		
+		Integer input1 = input;
+		String inputString = input1.toString();
+		Integer myValue = 0;
 		
+		boolean answer = false;
 		
+		for(int i = 0; i < inputString.length(); i++) {
+			
+			//turn that char into a number
+			Integer intDigit = Character.getNumericValue(inputString.charAt(i));
+			//Raise that number to the power of how many digits in the number
+			Integer raisedNumber = (int) Math.pow(intDigit, inputString.length());
+			//Add those numbers together
+			myValue += raisedNumber;
+			
+			
+		}
 		
+		if(input1.equals(myValue)) {
+			
+			
+			answer = true;
+			
+		} else {
+			
+			answer = false;
+			
+		}
+		return answer;
 		
-		
-		
-		return false;
 	}
 
 	/**
@@ -352,7 +468,20 @@ public class EvaluationService {
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+		List<Long> numberStorage = new ArrayList<>();
+		long lnumber = l;
+		
+		for (int i = 2; i <= lnumber; i++) {
+			
+			while (lnumber % i == 0) {
+				
+				numberStorage.add((long) i);
+				lnumber /= i;
+			}
+		}
+		return numberStorage;
+		
 	}
 
 	/**
@@ -390,11 +519,37 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
-		}
+			
+			// Write an implementation for this method declaration
+			int pos;
+			StringBuilder encrStr = new StringBuilder();
+			String alphabetWCase;
+			// generate cipher string.
+			
+			try {
+			alphabetWCase = alphabet + alphabet.toUpperCase();
 
+			String cipher = alphabet.substring(26-key,26) + alphabet.substring(0,26-key);
+			cipher = cipher + cipher.toUpperCase();
+			for (int idx = 0; idx < string.length(); idx++) {
+				if (alphabetWCase.contains(string.substring(idx,idx+1))) {
+				pos = cipher.indexOf(string.charAt(idx));
+				encrStr = encrStr.append(alphabetWCase.substring(pos, pos+1));
+				}
+				else {
+					encrStr = encrStr.append(string.charAt(idx));
+				}
+			}
+			System.out.println(string + " " + encrStr);
+			} 
+			catch (Exception e) {
+				System.out.println(e);
+			}
+			System.out.println(encrStr);
+			return encrStr.toString();
+		}
 	}
+		
 
 	/**
 	 * 12. Given a number n, determine what the nth prime is.
@@ -410,6 +565,19 @@ public class EvaluationService {
 	 */
 	public int calculateNthPrime(int i) {
 		// TODO Write an implementation for this method declaration
+		
+		List<Integer> numberStorage = new ArrayList<>();
+		int iNumber = i;
+		
+		for (int j = 2; i <= iNumber; j++) {
+			
+			while (iNumber % j == 0) {
+				
+				numberStorage.add(j);
+				iNumber /= j;
+			}
+		}
+		
 		return 0;
 	}
 
@@ -437,30 +605,59 @@ public class EvaluationService {
 	 * rxpyi ldmul cqfnk hlevi gsvoz abwlt gives thequickbrownfoxjumpsoverthelazydog
 	 *
 	 */
-	static class AtbashCipher {
+		static class AtbashCipher {
 
-		/**
-		 * Question 13
-		 * 
-		 * @param string
-		 * @return
-		 */
-		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			/**
+			 * Question 13
+			 * 
+			 * @param string
+			 * @return
+			 */
+			public static String encode(String string) {
+				// TODO Write an implementation for this method declaration
+				
+				String myString = string.replaceAll("[^(a-zA-Z)0-9]", "").toLowerCase();
+				String normalAlphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+				String encodedAlphabet = "zyxwvutsrqponmlkjihgfedcba0123456789";
+				StringBuilder str = new StringBuilder(); 
+				
+				try { 
+				
+					System.out.println("input1: " + string + " " +  myString);
+				for(int i = 0; i < myString.length(); i++) {
+					
+					
+					
+					Character currentChar = myString.charAt(i);
+	
+					int normalIndex = normalAlphabet.indexOf(currentChar);
+					
+					if(i % 5 == 0 && i != 0)
+						str = str.append(" ");
+					
+					str = str.append(encodedAlphabet.charAt(normalIndex));
+
+				}
+				System.out.println("im" + string + " out: " + str);
+				} catch (Exception e){
+					
+					System.out.println(e);
+				}
+				return str.toString();
+			}
+
+			/**
+			 * Question 14
+			 * 
+			 * @param string
+			 * @return
+			 */
+			public static String decode(String string) {
+				// TODO Write an implementation for this method declaration
+				return null;
+			}
 		}
 
-		/**
-		 * Question 14
-		 * 
-		 * @param string
-		 * @return
-		 */
-		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
-		}
-	}
 
 	/**
 	 * 15. The ISBN-10 verification process is used to validate book identification
@@ -576,7 +773,52 @@ public class EvaluationService {
 	 */
 	public boolean isLuhnValid(String string) {
 		// TODO Write an implementation for this method declaration
-		return false;
+		// Write an implementation for this method declaration
+		
+				StringBuilder newStr = new StringBuilder();
+				int newDigit = 0;
+				Boolean isValid = false;
+				int idx = 0;
+				int sum = 0;
+				
+				// Legal string
+				if (string.replaceAll("[0-9 ]", "").length() == 0 && string.length() > 1)
+					try {
+
+					// Remove nondigits.
+					String curStr = string.replaceAll("[^\\d]", "");
+					
+					// create new string
+					for (idx=0; idx < curStr.length(); idx++) {
+						if (idx % 2 == 0) 
+							newStr = newStr.append(curStr.charAt(idx));
+						else {
+							String temp = curStr.substring(idx,idx+1);
+							newDigit = Integer.parseInt(curStr.substring(idx,idx+1)) * 2;
+							if ( newDigit > 9)
+								newDigit = newDigit - 9;
+							newStr.append(newDigit);
+						}
+						
+					}
+					// is digit sum evenly divisible by 10?
+					for (idx = 0; idx < newStr.length(); idx++) {
+						sum = sum + Integer.parseInt(newStr.substring(idx,idx+1));
+					}
+					if (sum % 10 == 0) 
+						isValid = true;
+					else 
+						isValid = false;
+					
+					System.out.println("in " + string + " out " + newStr);
+					}
+					catch (Exception e) {
+						System.out.println(e);
+					}
+				System.out.println("input:" + string + " converted: " + newStr + " sum " + sum);
+				return isValid;
+			
+		
 	}
 
 	/**
@@ -607,8 +849,41 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		// Write an implementation for this method declaration
+		
+				Matcher matcher;
+				int result = 0;
+				//Pattern pattern = Pattern.compile("What is ");
+				
+				
+				String curStr = string;
+				// Remove "What is " from string.
+				try {
+					//curStr = curStr.replaceFirst("^What is ", "");
+					// 
+					matcher = Pattern.compile("[+-]?\\d+").matcher(curStr);
+					matcher.find();
+					int i = Integer.valueOf(matcher.group());
+			
+					matcher.find();
+					int i2 = Integer.valueOf(matcher.group());
+					
+					if (curStr.contains("plus"))
+							result = i + i2;
+					else if (curStr.contains("minus"))
+						result = i - i2;
+					else if (curStr.contains("multiplied by"))
+						result = i * i2;
+					else if (curStr.contains("divided by"))
+						result = i / i2;
+					
+					System.out.println(curStr + "  " +   + i + "  " + i2 + " = " + result);
+				} 
+				catch (Exception e) {
+					System.out.println(e);
+				}
+				
+				
+				return result;
 	}
-
 }
